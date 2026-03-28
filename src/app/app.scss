@@ -1,0 +1,155 @@
+$primary-color: #d20a0a; // UFC Red
+$dark-bg: #1a1a1a;
+$text-main: #333;
+$border-color: #e0e0e0;
+$shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: $text-main;
+}
+
+.main-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  
+  h1 {
+    font-size: 2.5rem;
+    color: $dark-bg;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  
+  .subtitle {
+    color: #888;
+    font-weight: 300;
+  }
+}
+
+.section {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 2.5rem;
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid $primary-color;
+    padding-bottom: 10px;
+
+    h2 { margin: 0; font-size: 1.5rem; }
+    
+    .badge {
+      background: #eee;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+  }
+}
+
+// Стили таблицы (Справочник 1)
+.table-container {
+  overflow-x: auto;
+  box-shadow: $shadow;
+  border-radius: 8px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+
+  th {
+    background: $dark-bg;
+    color: white;
+    text-align: left;
+    padding: 14px;
+    font-weight: 500;
+  }
+
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  tr:hover { background: #f9f9f9; }
+  .font-bold { font-weight: 600; }
+}
+
+// Стили карточек матчей (Справочник 2)
+.match-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.match-card {
+  background: white;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  padding: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $shadow;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: $primary-color;
+  }
+}
+
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+  
+  .tournament { font-weight: 800; color: $primary-color; }
+  .date { color: #888; }
+}
+
+.match-vs {
+  text-align: center;
+  margin: 15px 0;
+
+  .fighter-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .vs-label {
+    font-size: 0.7rem;
+    color: #999;
+    margin: 5px 0;
+    font-weight: 900;
+  }
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #f0f0f0;
+
+  &[data-status="Scheduled"] { background: #e3f2fd; color: #1976d2; }
+  &[data-status="Completed"] { background: #e8f5e9; color: #388e3c; }
+  &[data-status="Canceled"] { background: #ffebee; color: #d32f2f; }
+}
