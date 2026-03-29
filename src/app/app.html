@@ -50,25 +50,27 @@
       @for (item of sortedData(); track item.id) {
       <tr [class.selected-row]="selectedIds().has(item.id)">
 
-        <td class="checkbox-col">
+        <td class="checkbox-col" data-label="Select">
           <input type="checkbox" [checked]="selectedIds().has(item.id)" (change)="toggleSelection(item.id)">
         </td>
 
-        <td class="actions-cell">
-          <button class="btn-edit" (click)="openModal(item)">Edit</button>
-          <button class="btn-del" (click)="deleteItem(item.id)">Delete</button>
+        <td class="actions-cell" data-label="Management">
+          <div class="cell-wrapper">
+            <button class="btn-edit" (click)="openModal(item)">Edit</button>
+            <button class="btn-del" (click)="deleteItem(item.id)">Delete</button>
+          </div>
         </td>
 
         @if (activeTab() === 'fighters') {
-        <td class="bold">{{ asFighter(item).full_name }}</td>
-        <td>{{ asFighter(item).height_cm }} cm</td>
-        <td>{{ asFighter(item).weight_kg }} kg</td>
-        <td class="truncate">{{ asFighter(item).bio || 'No biography...' }}</td>
+        <td class="bold" data-label="Fighter Name">{{ asFighter(item).full_name }}</td>
+        <td data-label="Height">{{ asFighter(item).height_cm }} cm</td>
+        <td data-label="Weight">{{ asFighter(item).weight_kg }} kg</td>
+        <td class="truncate" data-label="Bio">{{ asFighter(item).bio || 'No bio...' }}</td>
         } @else {
-        <td class="bold">{{ asMatch(item).tournament_name }}</td>
-        <td>{{ asMatch(item).event_date | date:'dd.MM.yyyy' }}</td>
-        <td>{{ asMatch(item).fighter1?.full_name }}</td>
-        <td>{{ asMatch(item).fighter2?.full_name }}</td>
+        <td class="bold" data-label="Tournament">{{ asMatch(item).tournament_name }}</td>
+        <td data-label="Date">{{ asMatch(item).event_date | date:'dd.MM.yyyy' }}</td>
+        <td data-label="Fighter 1">{{ asMatch(item).fighter1?.full_name }}</td>
+        <td data-label="Fighter 2">{{ asMatch(item).fighter2?.full_name }}</td>
         }
       </tr>
       }
