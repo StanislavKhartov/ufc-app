@@ -1,9 +1,10 @@
-import { Component, computed, OnInit, signal } from '@angular/core'; // Добавили signal
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { DataService } from './services/data.service';
 import { Fighter } from './models/fighter';
 import { Match } from './models/match';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { SecurityUtils } from './security/security';
 
 @Component({
   selector: 'app-root',
@@ -13,23 +14,20 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './app.scss'
 })
 export class App implements OnInit {
-  // Состояние
   activeTab = signal<'fighters' | 'matches'>('fighters');
   fighters = signal<Fighter[]>([]);
   matches = signal<Match[]>([]);
-  
-  // Для сортировки
   sortKey = signal<string>('');
-  sortDir = signal<number>(1); // 1 - asc, -1 - desc
+  sortDir = signal<number>(1);
+  selectedIds = signal<Set<string>>(new Set());
 
-  // Для редактирования (Модалка)
   isModalOpen = false;
   editingItem: any = {};
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService) { }
 
   async ngOnInit() {
-    this.refresh();
+    await this.refresh();
   }
 
   async refresh() {
@@ -37,7 +35,6 @@ export class App implements OnInit {
     this.matches.set(await this.dataService.getMatches());
   }
 
-  // --- ЛОГИКА СОРТИРОВКИ ---
   sortedData = computed(() => {
     const tab = this.activeTab();
     const data = tab === 'fighters' ? [...this.fighters()] : [...this.matches()];
@@ -47,25 +44,20 @@ export class App implements OnInit {
     if (!key) return data;
 
     return data.sort((a: any, b: any) => {
-      let valA = a[key];
-      let valB = b[key];
+      let valA = a;
+      let valB = b;
 
-      // Если это вложенный объект (имя бойца в матче)
-      if (key.includes('.')) {
-        const parts = key.split('.');
-        valA = a[parts[0]]?.[parts[1]];
-        valB = b[parts[0]]?.[parts[1]];
+      for (const k of key.split('.')) {
+        valA = valA?.[k];
+        valB = valB?.[k];
       }
 
-      // Честное сравнение чисел
-      if (typeof valA === 'number') return (valA - valB) * dir;
-      
-      // Честное сравнение дат
-      if (key.includes('date')) {
+      if (typeof valA === 'number' && typeof valB === 'number') return (valA - valB) * dir;
+
+      if (key.toLowerCase().includes('date')) {
         return (new Date(valA).getTime() - new Date(valB).getTime()) * dir;
       }
 
-      // Сравнение строк
       return (valA || '').toString().localeCompare((valB || '').toString()) * dir;
     });
   });
@@ -79,7 +71,6 @@ export class App implements OnInit {
     }
   }
 
-  // --- CRUD ---
   openModal(item: any = {}) {
     this.editingItem = { ...item };
     this.isModalOpen = true;
@@ -87,26 +78,67 @@ export class App implements OnInit {
 
   async save() {
     const table = this.activeTab();
-    // Чистим объект от UI-полей перед сохранением
-    const { fighter1, fighter2, ...payload } = this.editingItem;
+    const cleanItem = SecurityUtils.sanitize(this.editingItem);
+
+    const error = table === 'fighters'
+      ? SecurityUtils.validateFighter(cleanItem)
+      : SecurityUtils.validateMatch(cleanItem);
+
+    if (error) {
+      alert(error);
+      return;
+    }
+
+    const { fighter1, fighter2, ...payload } = cleanItem;
     await this.dataService.save(table, payload);
+
     this.isModalOpen = false;
-    this.refresh();
+    await this.refresh();
   }
 
-  async deleteItem(id: string) {
-    if (confirm('Are you sure?')) {
+  async deleteItem(id: string | undefined) {
+    if (!id) return;
+    if (confirm('Are you sure you want to delete this?')) {
       await this.dataService.delete(this.activeTab(), id);
-      this.refresh();
+      await this.refresh();
     }
   }
 
-  asFighter(item: any): Fighter {
-    return item as Fighter;
+  toggleSelection(id: string) {
+    this.selectedIds.update(set => {
+      const newSet = new Set(set);
+      if (newSet.has(id)) newSet.delete(id);
+      else newSet.add(id);
+      return newSet;
+    });
+  }
+  toggleAll() {
+    const currentData = this.sortedData();
+    const allSelected = currentData.every(item => this.selectedIds().has(item.id));
+
+    if (allSelected) {
+      this.selectedIds.set(new Set());
+    } else {
+      this.selectedIds.set(new Set(currentData.map(item => item.id)));
+    }
+  }
+
+  async deleteSelected() {
+    const ids = Array.from(this.selectedIds());
+    if (ids.length === 0) return;
+
+    if (confirm(`Are you sure you want to delete ${ids.length} items?`)) {
+      await this.dataService.deleteMultiple(this.activeTab(), ids);
+      this.selectedIds.set(new Set()); // Очищаем выбор
+      await this.refresh();
+    }
+  }
+
+  resetSelection() {
+    this.selectedIds.set(new Set());
   }
 
 
-  asMatch(item: any): Match {
-    return item as Match;
-  }
+  asFighter(item: any): Fighter { return item as Fighter; }
+  asMatch(item: any): Match { return item as Match; }
 }

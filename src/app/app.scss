@@ -1,176 +1,339 @@
-// 1. ЦВЕТА ПАЛИТРЫ
-$bg-main: #D8D2CF;       // Светлый беж
-$bg-card: #ffffff;       // Белый
-$text-dark: #2E3604;     // Темно-зеленый
-$text-muted: #8D8179;    // Тауп
-$accent: #E19D29;        // Янтарный
-$olive: #4E5E07;         // Оливковый
-$danger: #c0392b;        // Красный
+$bg-main: #D8D2CF; // Светлый беж
+$bg-card: #ffffff; // Белый
+$text-dark: #2E3604; // Темно-зеленый (основной)
+$text-muted: #8D8179; // Тауп (второстепенный)
+$accent: #E19D29; // Янтарный (акценты)
+$olive: #4E5E07; // Оливковый (заголовки)
+$danger: #c0392b; // Красный
 
 $transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-// 2. БАЗОВЫЕ НАСТРОЙКИ
 :host {
-  display: block;
-  min-height: 100vh;
-  background-color: $bg-main;
-  color: $text-dark;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  padding: 40px 20px;
+    display: block;
+    min-height: 100vh;
+    background-color: $bg-main;
+    color: $text-dark;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding: 40px 20px;
 }
 
-.container { max-width: 1100px; margin: 0 auto; }
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
 
 header {
-  margin-bottom: 30px;
-  h1 { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; margin: 0; color: $text-dark; }
-  .subtitle { color: $text-muted; margin-top: 5px; font-weight: 500; }
+    margin-bottom: 30px;
+
+    h1 {
+        font-size: 2.2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin: 0;
+        color: $text-dark;
+    }
+
+    .subtitle {
+        color: $text-muted;
+        margin-top: 5px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
 }
 
-// 3. ВКЛАДКИ
 .tabs {
-  display: flex;
-  background: rgba($text-muted, 0.15);
-  padding: 5px;
-  border-radius: 12px;
-  width: fit-content;
-  margin-bottom: 25px;
+    display: flex;
+    background: rgba($text-muted, 0.2);
+    padding: 5px;
+    border-radius: 12px;
+    width: fit-content;
+    margin-bottom: 25px;
 
-  button {
-    border: none; background: transparent;
-    padding: 10px 25px; border-radius: 8px;
-    font-weight: 700; color: $text-muted;
-    cursor: pointer; transition: $transition;
-    text-transform: uppercase; font-size: 0.85rem;
+    button {
+        border: none;
+        background: transparent;
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: 700;
+        color: $text-muted;
+        cursor: pointer;
+        transition: $transition;
+        text-transform: uppercase;
+        font-size: 0.85rem;
 
-    &.active { background: $bg-card; color: $text-dark; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    &:hover:not(.active) { color: $text-dark; }
-  }
+        &.active {
+            background: $bg-card;
+            color: $text-dark;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        &:hover:not(.active) {
+            color: $text-dark;
+        }
+    }
 }
 
-// 4. ТУЛБАР
-.toolbar { margin-bottom: 15px; display: flex; justify-content: flex-end; }
+.toolbar {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+}
 
 .btn-add {
-  background: $olive; color: white; border: none;
-  padding: 12px 24px; border-radius: 10px;
-  font-weight: 700; cursor: pointer; transition: $transition;
-  &:hover { background: lighten($olive, 5%); transform: translateY(-2px); }
-}
-
-// 5. ТАБЛИЦА (Row Cards)
-.main-table {
-  width: 100%; border-collapse: separate; border-spacing: 0 10px;
-
-  th {
-    padding: 0 20px 5px; color: $olive;
-    font-size: 0.75rem; text-transform: uppercase;
-    letter-spacing: 1px; text-align: left; cursor: pointer;
-    &:hover { color: $accent; }
-  }
-
-  tr td {
-    background: $bg-card; padding: 18px 20px; border: none;
-    &:first-child { border-radius: 12px 0 0 12px; }
-    &:last-child { border-radius: 0 12px 12px 0; }
-  }
-
-  tr:hover td { background: #fdfdfd; }
-  .bold { font-weight: 700; color: $text-dark; }
-  .truncate { 
-    max-width: 250px; white-space: nowrap; 
-    overflow: hidden; text-overflow: ellipsis; color: $text-muted; 
-  }
-
-  th.actions-header {
-  width: 165px;                  // Фиксируем ширину колонки
-  text-align: left !important;   // Меняем на выравнивание по левому краю
-  padding-left: 35px !important; // Сдвигаем надпись вправо, чтобы она встала над EDIT
-  color: $olive;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-}
-
-// 6. КНОПКИ ДЕЙСТВИЙ (EDIT / DELETE)
-.actions-cell {
-  width: 165px;                  // Такая же ширина, как у заголовка
-  display: flex !important;
-  justify-content: flex-start;   // Выравниваем кнопки по левому краю внутри ячейки
-  align-items: center;
-  gap: 10px; 
-  padding-left: 20px !important; // Отступ кнопок от края карточки
-
-  button {
-    border: none; 
-    padding: 8px 12px;           // Чуть уменьшим падинги кнопок для компактности
-    border-radius: 8px;
-    font-weight: 700; 
-    cursor: pointer; 
+    background: $olive;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
     transition: $transition;
-    font-size: 0.75rem; 
     text-transform: uppercase;
-    min-width: 65px;             // Одинаковая минимальная ширина для кнопок
-  }
 
-  .btn-edit {
-    background: rgba($accent, 0.1); 
-    color: darken($accent, 15%);
-    border: 1px solid rgba($accent, 0.2);
-    &:hover { background: $accent; color: white; }
-  }
-
-  .btn-del {
-    background: transparent; 
-    color: $text-muted;
-    &:hover { 
-      background: rgba($danger, 0.1); 
-      color: $danger; 
+    &:hover {
+        background: lighten($olive, 5%);
+        transform: translateY(-2px);
     }
-  }
 }
 
-// 7. МОДАЛЬНОЕ ОКНО
+.btn-bulk-del {
+    background: $danger;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: $transition;
+    text-transform: uppercase;
+
+    &:hover {
+        background: darken($danger, 5%);
+    }
+}
+
+.main-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    table-layout: fixed;
+
+    th {
+        padding: 0 15px 10px;
+        color: $olive;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-align: left;
+        cursor: pointer;
+
+        &:hover {
+            color: $accent;
+        }
+    }
+
+    .checkbox-col {
+        width: 50px;
+        text-align: center;
+    }
+
+    .actions-header,
+    .actions-cell {
+        width: 180px;
+        text-align: center;
+    }
+
+    tr td {
+        background: $bg-card;
+        padding: 18px 15px;
+        border: none;
+        vertical-align: middle;
+
+        &:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        &:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+    }
+
+    tr:hover td {
+        background: #fdfdfd;
+    }
+
+    .bold {
+        font-weight: 700;
+        color: $text-dark;
+    }
+
+    .truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: $text-muted;
+        font-size: 0.9rem;
+    }
+}
+
+.actions-cell {
+    display: table-cell;
+
+    .cell-wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    button {
+        border: none;
+        padding: 8px 0;
+        width: 75px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: $transition;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+    }
+
+    .btn-edit {
+        background: rgba($accent, 0.1);
+        color: darken($accent, 15%);
+        border: 1px solid rgba($accent, 0.2);
+
+        &:hover {
+            background: $accent;
+            color: white;
+        }
+    }
+
+    .btn-del {
+        background: transparent;
+        color: $text-muted;
+        border: 1px solid transparent;
+
+        &:hover {
+            background: rgba($danger, 0.1);
+            color: $danger;
+            border-color: rgba($danger, 0.2);
+        }
+    }
+}
+
+.checkbox-col input {
+    width: 18px;
+    height: 18px;
+    accent-color: $accent;
+    cursor: pointer;
+}
+
+.selected-row td {
+    background: rgba($accent, 0.05) !important;
+    box-shadow: inset 0 0 0 1px rgba($accent, 0.2);
+}
+
 .modal-backdrop {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba($text-dark, 0.5); backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center; z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba($text-dark, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
 .modal-content {
-  background: $bg-card; width: 100%; max-width: 450px;
-  padding: 35px; border-radius: 25px; box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    background: $bg-card;
+    width: 100%;
+    max-width: 450px;
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
 
-  h2 { margin-bottom: 25px; font-weight: 800; color: $text-dark; }
-
-  .field-group {
-    display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;
-
-    label { font-size: 0.7rem; font-weight: 800; color: $text-muted; text-transform: uppercase; }
-
-    input, select, textarea {
-      background: lighten($bg-main, 10%); border: 2px solid transparent;
-      padding: 12px; border-radius: 10px; color: $text-dark;
-      font-size: 1rem; transition: $transition;
-      
-      &:focus { outline: none; background: white; border-color: $accent; }
+    h2 {
+        margin-bottom: 25px;
+        font-weight: 800;
+        color: $text-dark;
+        text-transform: uppercase;
+        font-size: 1.4rem;
     }
-  }
 
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 18px;
+
+        label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: $text-muted;
+            text-transform: uppercase;
+        }
+
+        input,
+        select,
+        textarea {
+            background: lighten($bg-main, 10%);
+            border: 2px solid transparent;
+            padding: 12px;
+            border-radius: 10px;
+            color: $text-dark;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: $transition;
+
+            &:focus {
+                outline: none;
+                background: white;
+                border-color: $accent;
+            }
+        }
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
 }
 
 .modal-actions {
-  display: flex; gap: 12px; margin-top: 25px;
-  
-  button {
-    flex: 1; padding: 14px; border-radius: 12px;
-    font-weight: 700; cursor: pointer; border: none; transition: $transition;
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
 
-    &[type="button"] { background: $bg-main; color: $text-dark; }
-    &.btn-save { background: $accent; color: white; }
-    &:hover { opacity: 0.9; transform: translateY(-1px); }
-  }
+    button {
+        flex: 1;
+        padding: 14px;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: $transition;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+
+        &[type="button"] {
+            background: $bg-main;
+            color: $text-dark;
+        }
+
+        &.btn-save {
+            background: $accent;
+            color: white;
+        }
+
+        &:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+    }
 }
