@@ -5,7 +5,8 @@ export interface Match {
   fighter_1_id: string;
   fighter_2_id: string;
   status: string;
-  notes: string;
+  is_deleted: boolean;      
+  last_modified_id?: string; 
   fighter1?: { full_name: string };
   fighter2?: { full_name: string };
 }
