@@ -1,17 +1,19 @@
 <div class="container">
-  <header>
+  <header class="main-header">
     <h1>UFC Registry</h1>
     <p class="subtitle">
-      System Management Interface • Reference Data Control
-      <strong>(Хартов Станислав Валерьевич 3 курс 2 группа)</strong>
+      Система управления справочниками •
+      <strong>Хартов Станислав Валерьевич (3 курс, 2 группа)</strong>
     </p>
   </header>
 
   <nav class="tabs">
-    <button [class.active]="activeTab() === 'fighters'" (click)="activeTab.set('fighters'); resetSelection()">
+    <button type="button" [class.active]="activeTab() === 'fighters'"
+      (click)="activeTab.set('fighters'); resetSelection()">
       Fighters Registry
     </button>
-    <button [class.active]="activeTab() === 'matches'" (click)="activeTab.set('matches'); resetSelection()">
+    <button type="button" [class.active]="activeTab() === 'matches'"
+      (click)="activeTab.set('matches'); resetSelection()">
       Match Schedule
     </button>
   </nav>
@@ -19,17 +21,16 @@
   <div class="toolbar">
     @if (selectedIds().size > 0) {
     <button class="btn-bulk-del" (click)="deleteSelected()">
-      Delete Selected ({{ selectedIds().size }})
+      Удалить выбранные ({{ selectedIds().size }})
     </button>
     }
-    <button class="btn-add" (click)="openModal()">+ Add New Entry</button>
+    <button class="btn-add" (click)="openModal()">+ Добавить запись</button>
   </div>
 
   <table class="main-table">
     <thead>
       <tr>
         <th class="checkbox-col"></th>
-
         <th class="actions-header">Actions</th>
 
         @if (activeTab() === 'fighters') {
@@ -50,11 +51,11 @@
       @for (item of sortedData(); track item.id) {
       <tr [class.selected-row]="selectedIds().has(item.id)">
 
-        <td class="checkbox-col" data-label="Select">
+        <td class="checkbox-col" data-label="Выбор">
           <input type="checkbox" [checked]="selectedIds().has(item.id)" (change)="toggleSelection(item.id)">
         </td>
 
-        <td class="actions-cell" data-label="Management">
+        <td class="actions-cell" data-label="Действия">
           <div class="cell-wrapper">
             <button class="btn-edit" (click)="openModal(item)">Edit</button>
             <button class="btn-del" (click)="deleteItem(item.id)">Delete</button>
@@ -62,16 +63,22 @@
         </td>
 
         @if (activeTab() === 'fighters') {
-        <td class="bold" data-label="Fighter Name">{{ asFighter(item).full_name }}</td>
-        <td data-label="Height">{{ asFighter(item).height_cm }} cm</td>
-        <td data-label="Weight">{{ asFighter(item).weight_kg }} kg</td>
-        <td class="truncate" data-label="Bio">{{ asFighter(item).bio || 'No bio...' }}</td>
-        } @else {
-        <td class="bold" data-label="Tournament">{{ asMatch(item).tournament_name }}</td>
-        <td data-label="Date">{{ asMatch(item).event_date | date:'dd.MM.yyyy' }}</td>
-        <td data-label="Fighter 1">{{ asMatch(item).fighter1?.full_name }}</td>
-        <td data-label="Fighter 2">{{ asMatch(item).fighter2?.full_name }}</td>
+        <td class="bold" data-label="Боец">{{ asFighter(item).full_name }}</td>
+        <td data-label="Рост">{{ asFighter(item).height_cm }} cm</td>
+        <td data-label="Вес">{{ asFighter(item).weight_kg }} kg</td>
+        <td class="truncate" data-label="Биография">{{ asFighter(item).bio || 'Нет данных...' }}</td>
         }
+
+        @else {
+        <td class="bold" data-label="Турнир">{{ asMatch(item).tournament_name }}</td>
+        <td data-label="Дата">{{ asMatch(item).event_date | date:'dd.MM.yyyy' }}</td>
+        <td data-label="Боец 1">{{ asMatch(item).fighter1?.full_name }}</td>
+        <td data-label="Боец 2">{{ asMatch(item).fighter2?.full_name }}</td>
+        }
+      </tr>
+      } @empty {
+      <tr>
+        <td colspan="6" class="empty-state">Записей не найдено...</td>
       </tr>
       }
     </tbody>
@@ -80,44 +87,48 @@
   @if (isModalOpen) {
   <div class="modal-backdrop">
     <div class="modal-content">
-      <h2>{{ editingItem.id ? 'Edit' : 'Create' }} Entry</h2>
+      <h2>{{ editingItem.id ? 'Редактировать' : 'Создать' }} запись</h2>
 
       <form (ngSubmit)="save()">
         @if (activeTab() === 'fighters') {
         <div class="field-group">
-          <label>Full Name</label>
-          <input name="name" [(ngModel)]="editingItem.full_name" required>
+          <label>ФИО Бойца</label>
+          <input name="name" [(ngModel)]="editingItem.full_name" required placeholder="Напр: Jon Jones">
         </div>
 
         <div class="row">
           <div class="field-group">
-            <label>Height (cm)</label>
-            <input type="number" name="h" [(ngModel)]="editingItem.height_cm">
+            <label>Рост (см)</label>
+            <input type="number" name="h" [(ngModel)]="editingItem.height_cm" step="0.1">
           </div>
           <div class="field-group">
-            <label>Weight (kg)</label>
-            <input type="number" name="w" [(ngModel)]="editingItem.weight_kg">
+            <label>Вес (кг)</label>
+            <input type="number" name="w" [(ngModel)]="editingItem.weight_kg" step="0.01">
           </div>
         </div>
 
         <div class="field-group">
-          <label>Biography</label>
-          <textarea name="bio" [(ngModel)]="editingItem.bio" rows="4"></textarea>
+          <label>Биография (многострочное поле)</label>
+          <textarea name="bio" [(ngModel)]="editingItem.bio" rows="4"
+            placeholder="Введите информацию о бойце..."></textarea>
         </div>
-        } @else {
+        }
+
+        @else {
         <div class="field-group">
-          <label>Tournament Name</label>
+          <label>Название турнира</label>
           <input name="t_name" [(ngModel)]="editingItem.tournament_name" required>
         </div>
 
         <div class="field-group">
-          <label>Event Date</label>
+          <label>Дата проведения</label>
           <input type="date" name="e_date" [(ngModel)]="editingItem.event_date" required>
         </div>
 
         <div class="field-group">
-          <label>Fighter 1</label>
-          <select name="f1" [(ngModel)]="editingItem.fighter_1_id">
+          <label>Первый боец</label>
+          <select name="f1" [(ngModel)]="editingItem.fighter_1_id" required>
+            <option value="" disabled selected>Выберите бойца...</option>
             @for (f of fighters(); track f.id) {
             <option [value]="f.id">{{ f.full_name }}</option>
             }
@@ -125,8 +136,9 @@
         </div>
 
         <div class="field-group">
-          <label>Fighter 2</label>
-          <select name="f2" [(ngModel)]="editingItem.fighter_2_id">
+          <label>Второй боец</label>
+          <select name="f2" [(ngModel)]="editingItem.fighter_2_id" required>
+            <option value="" disabled selected>Выберите бойца...</option>
             @for (f of fighters(); track f.id) {
             <option [value]="f.id">{{ f.full_name }}</option>
             }
@@ -134,17 +146,18 @@
         </div>
 
         <div class="field-group">
-          <label>Match Status</label>
+          <label>Статус боя</label>
           <select name="status" [(ngModel)]="editingItem.status">
-            <option value="Scheduled">Scheduled</option>
-            <option value="Completed">Completed</option>
+            <option value="Scheduled">Scheduled (Запланирован)</option>
+            <option value="Completed">Completed (Завершен)</option>
+            <option value="Canceled">Canceled (Отменен)</option>
           </select>
         </div>
         }
 
         <div class="modal-actions">
-          <button type="button" (click)="isModalOpen = false">Cancel</button>
-          <button type="submit" class="btn-save">Save Changes</button>
+          <button type="button" (click)="isModalOpen = false">Отмена</button>
+          <button type="submit" class="btn-save">Сохранить изменения</button>
         </div>
       </form>
     </div>
